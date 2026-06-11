@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PulpCulture — Cold-Pressed Juice Delivery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Tokens ── */
+    :root {
+      --carrot:    #E8601C;
+      --carrot-lt: #F4884A;
+      --carrot-bg: #FFF1E8;
+      --indigo:    #3D2C8D;
+      --indigo-lt: #6C5FC7;
+      --indigo-bg: #EEEAF8;
+      --ink:       #1A1220;
+      --muted:     #5C5368;
+      --line:      #E2D9F3;
+      --white:     #FFFFFF;
+      --cream:     #FDFAF6;
+      --radius:    14px;
+      --shadow:    0 2px 18px rgba(61,44,141,.10);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    /* ── Badge strip ── */
+    .topbar {
+      background: var(--indigo);
+      color: #fff;
+      text-align: center;
+      font-size: .78rem;
+      letter-spacing: .04em;
+      padding: .55rem 1rem;
+      font-weight: 500;
+    }
+
+    /* ── Nav / Hero ── */
+    header {
+      background: var(--white);
+      border-bottom: 2px solid var(--line);
+      padding: 1.6rem 1.5rem 1.4rem;
+      text-align: center;
+    }
+
+    .logo {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2.4rem, 7vw, 4rem);
+      font-weight: 900;
+      letter-spacing: -.02em;
+      line-height: 1;
+    }
+    .logo span { color: var(--carrot); }
+
+    .tagline {
+      margin-top: .35rem;
+      font-size: .95rem;
+      color: var(--muted);
+      letter-spacing: .02em;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: .5rem;
+      margin-top: 1rem;
+    }
+    .badge {
+      border: 1.5px solid var(--line);
+      border-radius: 99px;
+      padding: .3rem .85rem;
+      font-size: .78rem;
+      font-weight: 500;
+      color: var(--muted);
+      background: var(--cream);
+    }
+
+    /* ── Early Bird Banner ── */
+    .banner {
+      background: var(--carrot-bg);
+      border: 1.5px solid var(--carrot-lt);
+      border-radius: var(--radius);
+      margin: 1.4rem auto;
+      max-width: 760px;
+      padding: .8rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      font-size: .9rem;
+      font-weight: 500;
+      color: var(--carrot);
+    }
+    .banner-icon { font-size: 1.1rem; flex-shrink: 0; }
+
+    /* ── Section wrapper ── */
+    .section {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 1.2rem;
+    }
+
+    .section-label {
+      font-size: .7rem;
+      letter-spacing: .12em;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--indigo);
+      margin-bottom: .8rem;
+    }
+
+    /* ── Plans ── */
+    #plans { padding: 2rem 1.2rem 0; max-width: 860px; margin: 0 auto; }
+
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: .6rem;
+    }
+
+    @media(max-width: 640px) {
+      .plans-grid { grid-template-columns: 1fr; }
+    }
+
+    .plan-card {
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.3rem 1.2rem 1.4rem;
+      background: var(--white);
+      cursor: pointer;
+      transition: border-color .18s, box-shadow .18s;
+      position: relative;
+    }
+    .plan-card:hover { border-color: var(--carrot-lt); box-shadow: var(--shadow); }
+    .plan-card.selected {
+      border-color: var(--carrot);
+      background: var(--carrot-bg);
+      box-shadow: 0 0 0 3px rgba(232,96,28,.15);
+    }
+    .plan-card.popular { border-color: var(--carrot); }
+
+    .popular-pill {
+      position: absolute;
+      top: -13px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--carrot);
+      color: #fff;
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      border-radius: 99px;
+      padding: .22rem .75rem;
+      white-space: nowrap;
+    }
+
+    .plan-name {
+      font-family: 'Fraunces', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .plan-price {
+      margin-top: .5rem;
+      display: flex;
+      align-items: baseline;
+      gap: .5rem;
+    }
+    .plan-price .current {
+      font-family: 'Fraunces', serif;
+      font-size: 1.9rem;
+      font-weight: 900;
+      color: var(--carrot);
+    }
+    .plan-price .original {
+      font-size: .9rem;
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+
+    .plan-desc {
+      margin-top: .5rem;
+      font-size: .85rem;
+      color: var(--muted);
+    }
+
+    .plan-badge {
+      display: inline-block;
+      margin-top: .6rem;
+      background: var(--indigo-bg);
+      color: var(--indigo);
+      border-radius: 99px;
+      font-size: .72rem;
+      font-weight: 600;
+      padding: .2rem .65rem;
+    }
+
+    /* ── Drink Schedule ── */
+    #schedule {
+      max-width: 860px;
+      margin: 2.5rem auto 0;
+      padding: 0 1.2rem;
+    }
+
+    .drinks-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .9rem;
+      margin-top: .6rem;
+    }
+    @media(max-width: 640px) {
+      .drinks-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media(max-width: 380px) {
+      .drinks-grid { grid-template-columns: 1fr; }
+    }
+
+    .drink-card {
+      background: var(--white);
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1rem 1rem 1.1rem;
+      transition: transform .15s;
+    }
+    .drink-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+
+    .drink-day {
+      font-size: .68rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--indigo-lt);
+      margin-bottom: .3rem;
+    }
+    .drink-name {
+      font-family: 'Fraunces', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .drink-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .3rem;
+      margin: .35rem 0 .45rem;
+    }
+    .drink-tag {
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      background: var(--carrot-bg);
+      color: var(--carrot);
+      border-radius: 99px;
+      padding: .15rem .55rem;
+    }
+    .drink-ingredients {
+      font-size: .8rem;
+      color: var(--muted);
+    }
+
+    /* ── Form ── */
+    #subscribe {
+      max-width: 860px;
+      margin: 2.5rem auto 0;
+      padding: 0 1.2rem;
+    }
+
+    .form-card {
+      background: var(--white);
+      border: 1.5px solid var(--line);
+      border-radius: 20px;
+      padding: 2rem 2rem 2.2rem;
+      box-shadow: var(--shadow);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem 1.2rem;
+    }
+    @media(max-width: 580px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .form-card { padding: 1.4rem 1.2rem 1.8rem; }
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: .35rem; }
+    .form-group.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    input, select, textarea {
+      border: 1.5px solid var(--line);
+      border-radius: 9px;
+      padding: .7rem .9rem;
+      font-size: .92rem;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      transition: border-color .15s, box-shadow .15s;
+      width: 100%;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--carrot);
+      box-shadow: 0 0 0 3px rgba(232,96,28,.12);
+      background: var(--white);
+    }
+    input::placeholder, textarea::placeholder { color: #aaa; }
+    textarea { resize: vertical; min-height: 80px; }
+
+    .consent-row {
+      display: flex;
+      align-items: flex-start;
+      gap: .7rem;
+      font-size: .82rem;
+      color: var(--muted);
+      margin-top: .3rem;
+    }
+    .consent-row input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      accent-color: var(--carrot);
+      cursor: pointer;
+      background: none;
+      box-shadow: none;
+      border: none;
+      padding: 0;
+    }
+
+    .submit-btn {
+      width: 100%;
+      margin-top: 1.3rem;
+      padding: 1rem 2rem;
+      background: var(--carrot);
+      color: #fff;
+      border: none;
+      border-radius: 11px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: .01em;
+      transition: background .18s, transform .12s;
+    }
+    .submit-btn:hover { background: #d0521a; transform: translateY(-1px); }
+    .submit-btn:active { transform: translateY(0); }
+    .submit-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: 3rem;
+      padding: 1.6rem 1.2rem;
+      text-align: center;
+      border-top: 1.5px solid var(--line);
+      font-size: .82rem;
+      color: var(--muted);
+    }
+    footer a { color: var(--carrot); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    .footer-fssai { margin-top: .3rem; font-size: .72rem; opacity: .7; }
+
+    /* ── Error state ── */
+    .field-error { font-size: .75rem; color: #e02020; margin-top: .2rem; }
+    input.invalid, select.invalid, textarea.invalid { border-color: #e02020 !important; }
+
+    /* ── Spinning loader on button ── */
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2.5px solid rgba(255,255,255,.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">🌿 Free delivery · Delivered before 8 AM</div>
+
+  <header>
+    <div class="logo">Pulp<span>Culture</span></div>
+    <p class="tagline">Only what matters &nbsp;·&nbsp; Cold-pressed juice delivery</p>
+    <div class="badge-row">
+      <span class="badge">No added sugar</span>
+      <span class="badge">No preservatives</span>
+      <span class="badge">Daily delivery</span>
+      <span class="badge">Free delivery</span>
+      <span class="badge">FSSAI: 21226010003181</span>
+    </div>
+  </header>
+
+  <main>
+
+    <div class="section" style="padding-top: 1.5rem;">
+      <div class="banner">
+        <span class="banner-icon">⏳</span>
+        <span>Early subscriber offer — first 30 sign-ups get special pricing locked in</span>
+      </div>
+    </div>
+
+    <!-- Plans -->
+    <div id="plans">
+      <p class="section-label">Choose your plan</p>
+      <div class="plans-grid">
+
+        <div class="plan-card" data-plan="2week" onclick="selectPlan(this)">
+          <div class="plan-name">2 Week Plan</div>
+          <div class="plan-price">
+            <span class="current">₹1,599</span>
+          </div>
+          <div class="plan-desc">6 bottles per week<br>Daily delivery</div>
+          <span class="plan-badge">Starter</span>
+        </div>
+
+        <div class="plan-card popular selected" data-plan="core1month" onclick="selectPlan(this)">
+          <div class="popular-pill">Most popular</div>
+          <div class="plan-name">Core 1 Month</div>
+          <div class="plan-price">
+            <span class="current">₹1,999</span>
+            <span class="original">₹2,899</span>
+          </div>
+          <div class="plan-desc">20 bottles per month<br>Daily delivery</div>
+          <span class="plan-badge">Best value</span>
+        </div>
+
+        <div class="plan-card" data-plan="elite1month" onclick="selectPlan(this)">
+          <div class="plan-name">Elite 1 Month</div>
+          <div class="plan-price">
+            <span class="current">₹2,499</span>
+            <span class="original">₹3,299</span>
+          </div>
+          <div class="plan-desc">24 bottles + 2 power shots/week<br>Daily delivery</div>
+          <span class="plan-badge">Power pack</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Drink Schedule -->
+    <div id="schedule">
+      <p class="section-label">Your 6-day juice routine</p>
+      <div class="drinks-grid">
+
+        <div class="drink-card">
+          <div class="drink-day">Day 1</div>
+          <div class="drink-name">Amla Shield</div>
+          <div class="drink-tags">
+            <span class="drink-tag">Immunity</span>
+            <span class="drink-tag">Vitamin C</span>
+          </div>
+          <div class="drink-ingredients">Amla, Mint, Ginger, Curry Leaves</div>
+        </div>
+
+        <div class="drink-card">
+          <div class="drink-day">Day 2</div>
+          <div class="drink-name">Golden Hour</div>
+          <div class="drink-tags">
+            <span class="drink-tag">Hydration</span>
+            <span class="drink-tag">Immunity</span>
+          </div>
+          <div class="drink-ingredients">Pineapple, Turmeric, Lemon</div>
+        </div>
+
+        <div class="drink-card">
+          <div class="drink-day">Day 3</div>
+          <div class="drink-name">Deep Root</div>
+          <div class="drink-tags">
+            <span class="drink-tag">Glow</span>
+            <span class="drink-tag">Vitamins</span>
+          </div>
+          <div class="drink-ingredients">Carrot, Beetroot, Lemon, Ginger</div>
+        </div>
+
+        <div class="drink-card">
+          <div class="drink-day">Day 4</div>
+          <div class="drink-name">Island Cool</div>
+          <div class="drink-tags">
+            <span class="drink-tag">Cooler</span>
+            <span class="drink-tag">Minerals</span>
+          </div>
+          <div class="drink-ingredients">Pineapple, Cucumber, Mint, Ginger</div>
+        </div>
+
+        <div class="drink-card">
+          <div class="drink-day">Day 5</div>
+          <div class="drink-name">Sunrise Flush</div>
+          <div class="drink-tags">
+            <span class="drink-tag">Hydration</span>
+            <span class="drink-tag">Anti-Inflammation</span>
+          </div>
+          <div class="drink-ingredients">Watermelon, Beetroot, Mint, Ginger</div>
+        </div>
+
+        <div class="drink-card">
+          <div class="drink-day">Day 6</div>
+          <div class="drink-name">Forest Reset</div>
+          <div class="drink-tags">
+            <span class="drink-tag">Gut Cleanse</span>
+            <span class="drink-tag">Immunity</span>
+          </div>
+          <div class="drink-ingredients">Nannari, Cucumber, Tulsi</div>
+        </div>
+
+      </div>
+      <p style="font-size:.78rem;color:var(--muted);margin-top:.75rem;">Menu refreshes every 2 weeks · New flavours keep it interesting</p>
+    </div>
+
+    <!-- Subscription Form -->
+    <div id="subscribe">
+      <p class="section-label">Your details</p>
+      <div class="form-card">
+        <form id="subForm" novalidate>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="fullName">Full name</label>
+              <input type="text" id="fullName" name="fullName" placeholder="Priya Sharma" required />
+            </div>
+            <div class="form-group">
+              <label for="whatsapp">WhatsApp number</label>
+              <input type="tel" id="whatsapp" name="whatsapp" placeholder="+91 98765 43210" required />
+            </div>
+            <div class="form-group full">
+              <label for="address">Delivery address</label>
+              <input type="text" id="address" name="address" placeholder="Flat / building name, street" required />
+            </div>
+            <div class="form-group">
+              <label for="startDate">Preferred start date</label>
+              <input type="date" id="startDate" name="startDate" required />
+            </div>
+            <div class="form-group">
+              <label for="referral">How did you hear about us? <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+              <select id="referral" name="referral">
+                <option value="" selected>Select</option>
+                <option value="whatsapp">WhatsApp</option>
+                <option value="instagram">Instagram</option>
+                <option value="stall">Stall / Pop-up</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label for="notes">Other comments <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+              <textarea id="notes" name="notes" placeholder="Allergies, preferred flavours, neighbourhood landmarks for delivery, or just say hi 👋"></textarea>
+            </div>
+          </div>
+
+          <div class="consent-row" style="margin-top:1rem;">
+            <input type="checkbox" id="consent" name="consent" required />
+            <label for="consent" style="font-weight:400;font-size:.82rem;color:var(--muted);">I agree to be contacted on WhatsApp by PulpCulture regarding my subscription, delivery updates, and new menu launches.</label>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submitBtn">Subscribe now</button>
+
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    Questions? WhatsApp us at <a href="tel:+919972641415">+91 9972641415</a> or email <a href="mailto:my.pulpculture@gmail.com">my.pulpculture@gmail.com</a>
+    <div class="footer-fssai">FSSAI No.: 21226010003181</div>
+  </footer>
+
+  <script>
+    // ── Plan selection ──
+    let selectedPlan = 'core1month';
+    function selectPlan(card) {
+      document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedPlan = card.dataset.plan;
+    }
+
+    // ── Set min date to today ──
+    const dateInput = document.getElementById('startDate');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.min = today;
+
+    // ── Form submit ──
+    const form = document.getElementById('subForm');
+    const btn  = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      // Basic validation
+      let valid = true;
+      ['fullName','whatsapp','address','startDate'].forEach(id => {
+        const el = document.getElementById(id);
+        el.classList.remove('invalid');
+        if (!el.value.trim()) { el.classList.add('invalid'); valid = false; }
+      });
+      const consent = document.getElementById('consent');
+      if (!consent.checked) {
+        consent.style.outline = '2px solid #e02020';
+        valid = false;
+      } else { consent.style.outline = ''; }
+
+      if (!valid) return;
+
+      // Loading state
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Sending…';
+
+      const payload = {
+        name:      document.getElementById('fullName').value.trim(),
+        whatsapp:  document.getElementById('whatsapp').value.trim(),
+        address:   document.getElementById('address').value.trim(),
+        startDate: document.getElementById('startDate').value,
+        referral:  document.getElementById('referral').value,
+        notes:     document.getElementById('notes').value.trim(),
+        plan:      selectedPlan,
+        timestamp: new Date().toISOString()
+      };
+
+      try {
+        // !! Replace with your Cloudflare Worker URL after deployment !!
+        const WORKER_URL = 'https://pulp.pandiyanjeyavel.workers.dev/';
+        const res = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('Server error');
+        window.location.href = 'thankyou.html';
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Subscribe now';
+        alert('Something went wrong. Please WhatsApp us directly at +91 9972641415');
+      }
+    });
+  </script>
+</body>
+</html>
